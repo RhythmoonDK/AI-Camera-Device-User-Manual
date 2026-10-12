@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI影报全能站使用说明书 V2.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 基础样式保持不变 */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Microsoft YaHei', Arial, sans-serif; }
+        body { display: flex; background-color: #f5f5f5; color: #333; line-height: 1.6; }
+        .sidebar { width: 280px; background-color: #2c3e50; color: #ecf0f1; height: 100vh; overflow-y: auto; position: fixed; transition: all 0.3s; }
+        .logo-area { padding: 20px; border-bottom: 1px solid #34495e; display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-size: 1.5rem; font-weight: bold; display: flex; align-items: center; }
+        .logo i { margin-right: 10px; color: #3498db; }
+        .menu { padding: 15px 0; }
+        .menu-item { padding: 12px 20px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: space-between; }
+        .menu-item:hover { background-color: #34495e; }
+        .menu-item.active { background-color: #3498db; }
+        .menu-item i { margin-right: 10px; width: 20px; text-align: center; }
+        .submenu { background-color: #233140; display: none; }
+        .submenu.active { display: block; }
+        .submenu-item { padding: 10px 20px 10px 40px; cursor: pointer; transition: all 0.3s; }
+        .submenu-item:hover { background-color: #2c3e50; }
+        .submenu-item.active { color: #3498db; font-weight: bold; }
+        .main-content { flex: 1; margin-left: 280px; padding: 30px; transition: all 0.3s; }
+        .header { margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #eaeaea; }
+        .breadcrumb { display: flex; list-style: none; margin-bottom: 15px; font-size: 0.9rem; color: #7f8c8d; }
+        .breadcrumb li:after { content: ">"; margin: 0 10px; }
+        .breadcrumb li:last-child:after { content: ""; }
+        .content { background-color: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); padding: 30px; min-height: 500px; }
+        h2 { color: #3498db; margin: 25px 0 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        .note { background-color: #e8f4fd; border-left: 4px solid #3498db; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 1rem; border-radius: 6px; margin: 1rem 0; }
+        .hardware-list { list-style: none; }
+        .hardware-list li { padding: 0.8rem; border-bottom: 1px solid #eee; display: flex; align-items: center; }
+        .hardware-list li:before { content: "✓"; color: #2ecc71; margin-right: 1rem; font-weight: bold; }
+        .faq-section { margin-bottom: 30px; }
+        .faq-type-title { background: #f8f9fa; padding: 5px 15px; border-left: 5px solid #2c3e50; margin: 15px 0; font-weight: bold; }
+        @media (max-width: 768px) { .sidebar { width: 100%; height: auto; position: relative; } .main-content { margin-left: 0; } }
+
+        .step-box 
+        {
+            margin-bottom: 30px; /* 每一个步骤之间留出空隙 */
+            padding: 20px;
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            border-radius: 10px;
+        }
+        
+        .step-img 
+        {
+            width: 100%;       /* 让图片宽度自动撑满容器 */
+            max-width: 500px;  /* 但最大不要超过500像素，防止太大难看 */
+            height: auto;      /* 高度自动 */
+            display: block;    /* 独立成行 */
+            margin: 15px 0;    /* 图片上下留点间距 */
+            border-radius: 5px;/* 图片圆角 */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); /* 给图片加一点点阴影，显专业 */
+        }
+
+        /* 图片并排容器 */
+        .img-row
+        {
+            display: flex;
+            gap: 15px;
+            margin: 20px auto; /* 容器上下间距20px，左右居中 */
+            justify-content: center;
+            max-width: 800px;  /* 控制两张图加起来的总宽度，你可以根据需要调整这个数字 */
+        }
+
+        .img-row .step-img
+        {
+            flex: 1;
+            width: 0;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+        }
+
+
+        /* 手机端适配：屏幕太窄时还是建议变回上下排列，否则图片会小得看不见 */
+        @media (max-width: 600px)
+        {
+            .img-row
+            {
+                flex-direction: column;
+                align-items: center; /* 手机上居中 */
+            }
+            
+            .img-row .step-img
+            {
+                width: 100%; /* 手机上宽度占满 */
+                max-width: 300px; /* 但也别太大 */
+            }
+        }
+
+        .step-video
+        {
+    width: 100%;
+    max-width: 600px; /* 限制视频最大宽度 */
+    height: auto;
+    display: block;
+    margin: 15px auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+    </style>
+
+
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="logo-area">
+            <div class="logo"><i class="fas fa-camera"></i><span>AI影报全能站</span></div>
+        </div>
+        
+        <div class="menu">
+            <div class="menu-item active" data-page="home">
+                <span><i class="fas fa-home"></i> 首页</span>
+            </div>
+            
+            <div class="menu-item">
+                <span><i class="fas fa-cogs"></i> 设备简介</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="submenu">
+                <div class="submenu-item" data-page="feature1">AI拍报机</div>
+                <div class="submenu-item" data-page="feature2">AI写真机</div>
+            </div>
+            
+            <div class="menu-item">
+                <span><i class="fas fa-microchip"></i> 硬件介绍</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="submenu">
+                <div class="submenu-item" data-page="hw_baobao">AI拍报机专用硬件</div>
+                <div class="submenu-item" data-page="hw_xiezhen">AI写真机专用硬件</div>
+                <div class="submenu-item" data-page="hw_shared">共用核心组件</div>
+            </div>
+            
+            <div class="menu-item">
+                <span><i class="fas fa-book"></i> 操作指南</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="submenu">
+                <div class="submenu-item" data-page="op_baobao">AI拍报机操作</div>
+                <div class="submenu-item" data-page="op_xiezhen">AI写真机操作</div>
+            </div>
+            
+            <div class="menu-item">
+                <span><i class="fas fa-question-circle"></i> 常见问题</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="submenu">
+                <div class="submenu-item" data-page="faq_baobao">AI拍报机Q&A</div>
+                <div class="submenu-item" data-page="faq_xiezhen">AI写真机Q&A</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <div class="header">
+            <ul class="breadcrumb" id="breadcrumb"><li>首页</li></ul>
+            <h1 id="page-title">欢迎使用AI影报全能站</h1>
+        </div>
+        <div class="content" id="content-area"></div>
+    </div>
+
+    <script>
+        const pageContents = {
+            'home': {
+                title: '欢迎使用AI影报全能站',
+                breadcrumb: ['首页', '说明书 V2.0'],
+                content: `
+                    <p>专业影像处理 · 现场打印输出 · 智能AI技术</p>
+                    <div class="warning"><strong>重要提示：</strong> 请在使用前阅读本说明书，确保正确操作设备硬件及软件系统。</div>
+                    <h2>产品概述</h2>
+                    <p>广西华云大数据有限公司推出的《AI 影报全能站》设备，在研发、集成与应用布局上形成了全国协同网络：
+                        <br>“北上广 研发 + 广西集成 + 东盟应用” 的模式贯穿全链条 —— 核心研发环节扎根广州，
+                        依托北上广在人工智能算法、硬件工程研发的高端人才与技术资源，攻克设备硬件架构、软件系统迭代及 AI 模型深度优化等关键技术；
+                        <br>集成环节落地广西；市场应用端重点布局东盟市场，利用广西与东盟国家的地缘邻近性及文化交融基础，
+                        快速推进设备在东南亚消费场景的落地。</p>
+                `
+            },
+            
+            'feature1': 
+            {
+                title: 'AI拍报机功能',
+                breadcrumb: ['设备简介', 'AI拍报机'],
+                content: `
+                    <h2>AI拍报机</h2>
+                    <p>将人物照片与创意报刊模板完美结合，生成独一无二的纪念报纸。</p>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="拍报机款式2.jpg" class="step-img" alt="拍报机">
+                            <img src="拍报机款式3.jpg" class="step-img" alt="拍报机">
+                        </div>
+                    </div>
+
+                    <ul class="hardware-list">
+                        <li><strong>海报合成：</strong> 预设多种主题报纸风格，支持实时预览。</li>
+                        <li><strong>美颜优化：</strong> 针对报纸印刷风格进行处理。</li>
+                        <li><strong>一键打印：</strong> 拍摄好的照片与报刊模板可以现场快速打印。</li>
+                    </ul>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="拍报机款式1.jpg" class="step-img" alt="拍报机">
+                        </div>
+                    </div>
+                `
+            },
+            
+            'feature2': 
+            {
+                title: 'AI写真机功能',
+                breadcrumb: ['设备简介', 'AI写真机'],
+                content: `
+                    <h2>AI写真机</h2>
+                    <p>利用深度学习算法，实现高拟真度的人物写真合成。</p>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="写真机款式1.jpg" class="step-img" alt="写真机">
+                            <img src="写真机款式2.jpg" class="step-img" alt="写真机">
+                        </div>
+                    </div>
+
+                    <ul class="hardware-list">
+                        <li><strong>人脸融合：</strong> 将用户面部精准融合至精美写真模板中。</li>
+                        <li><strong>风格多样：</strong> 涵盖古风、职场、艺术写真等多种风格。</li>
+                        <li><strong>自然光效：</strong> 智能模拟模板环境光，确保融合效果自然真实。</li>
+                    </ul>
+                `
+            },
+            
+            'hw_baobao': {
+                title: 'AI拍报机专用硬件',
+                breadcrumb: ['硬件介绍', 'AI拍报机专用硬件'],
+                content: `
+                    <h2>AI拍报机硬件配置</h2>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="拍报机专用.jpg" class="step-img" alt="拍报机专用">
+                        </div>
+                    </div>
+
+                    <ul class="hardware-list">
+                        <li><strong>1、触控显示屏：</strong> 可触屏式一体机，实现拍报打印操作。</li>
+                        <li><strong>2、显示屏散热器：</strong> <span style="color:red;font-weight:bold;">重要提示：</span>由于显示屏工作负载大、容易发热，散热器必须在设备开启期间始终保持开启状态。</li>
+                        <li><strong>3、音响：</strong> 用于操作语音播报。</li>
+                        <li><strong>4、摄像头：</strong> 高清摄像头，用于取景。</li>
+                    </ul>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="拍报打印机.jpg" class="step-img" alt="拍报打印机">
+                        </div>
+                    </div>
+
+                    <ul class="hardware-list">
+                        <li><strong>报刊打印机：</strong> 专业级高速打印机，适配报纸尺寸相纸，拍完即可一键打印。</li>
+                    </ul>
+                `
+
+
+            },
+            'hw_xiezhen': {
+                title: 'AI写真机专用硬件',
+                breadcrumb: ['硬件介绍', 'AI写真机专用硬件'],
+                content: `
+                    <h2>AI写真机硬件配置</h2>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="写真机专用.jpg" class="step-img" alt="写真机专用">
+                        </div>
+                    </div>
+
+
+                    <ul class="hardware-list">
+                        <li><strong>1、高清触控显示屏：</strong> 大尺寸高分辨率屏幕，用于展示精细写真预览。</li>
+                        <li><strong>2、显示屏散热器：</strong> <span style="color:red;font-weight:bold;">重要提示：</span>由于写真处理对显存要求较高，屏幕易发热，请确保散热器持续运行。</li>
+                        <li><strong>3、音响：</strong> 用于操作语音播报。</li>
+                        <li><strong>4、摄像头：</strong> 高清摄像头，用于取景。</li>
+                    </ul>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="写真打印机.jpg" class="step-img" alt="写真打印机">
+                        </div>
+                    </div>
+                    
+                    <ul class="hardware-list">
+                        <li><strong>写真打印机：</strong> 高色彩还原度热升华打印机，支持相片级输出。</li>
+                    </ul>
+
+                `
+            },
+            'hw_shared':
+            {
+                title: '共用核心组件',
+                breadcrumb: ['硬件介绍', '共用核心组件'],
+                content:
+                `
+                    <h2>内部核心组件</h2>
+                    
+                    <p>如下图所示，以下为AI拍报机与AI写真机共同使用的核心控制模块：</p>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="共用核心组件.jpg" class="step-img" alt="选择模板界面图">
+                        </div>
+                    </div>
+
+                    <ul class="hardware-list">
+                        <li><strong>1、串口通信服务器：</strong> 负责所有指令传输与底层硬件协调，将系统与网络连接。</li>
+                        <li><strong>2、总电源：</strong> 所有设备的总电源。</li>
+                        <li><strong>3、时控开关：</strong> 设定设备自动开关机时间。</li>
+                    </ul>
+
+                    <h2>时控开关操作视频演示</h2>
+                    <div class="step-box">
+                        <h3>演示视频</h3>
+                        <p>请观看下方的操作演示视频，了解时控开关的完整使用流程。</p>
+                        <video class="step-video" controls poster="视频封面图.jpg">
+                            <source src="时控开关视频.mp4" type="video/mp4">
+                            您的浏览器不支持 HTML5 视频播放，请更换浏览器查看。
+                        </video>
+                    </div>
+
+                    <ul class="hardware-list">
+                        <li><strong>4、防雷击装置：</strong> 保护精密电子元件免受极端天气损坏。</li>
+                        <li><strong>5、温控风扇：</strong> 机箱内部整体温控散热系统，自动调节环境温度，内部温度过高时会启动散热。</li>
+                        <li><strong>6、亮度调节旋钮：</strong> 手动微调触控显示屏亮度，适配不同环境光。</li>
+                    </ul>
+
+                    <h2>外部组件</h2>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="拉杆.jpg" class="step-img" alt="选择模板界面图">
+                            <img src="出报口.jpg" class="step-img" alt="选择模板界面图">
+                        </div>
+                    </div>
+
+                    <ul class="hardware-list">
+                        <li><strong>1、摄像头：</strong> 负责取景（红色方框处拉杆可调节摄像头上下角度）。</li>
+                        <li><strong>2、出报口：</strong> 打印好的报纸、照片可从此处取出。</li>
+                    </ul>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="彩色灯带.jpg" class="step-img" alt="选择模板界面图">
+                            <img src="遥控器.jpg" class="step-img" alt="选择模板界面图">
+                        </div>
+                    </div>
+
+                    <ul class="hardware-list">
+                        <li><strong>3、彩色灯带：</strong> 可以使用配套的遥控器自定义灯色和变化效果。</li>
+                        
+
+
+
+                `
+            },
+            'op_baobao': {
+                title: 'AI拍报机操作指南',
+                breadcrumb: ['操作指南', 'AI拍报机'],
+                content: `
+                    <h2>AI拍报机操作流程</h2>
+                    <div class="note">步骤 1：点击屏幕两侧的红色箭头，可以选择喜欢的报刊模板，屏幕右上角可以切换其他语言；
+                        <br>拍照前可以拨动摄像头右边的拉杆，确保人物处于画面中。
+                    </div>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="step1.jpg" class="step-img" alt="选择模板界面图">
+                        </div>
+                    </div>
+
+                    <div class="note">步骤 2：点击下方“立即体验”后，等待倒计时结束即可完成拍照。</div>
+                    
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="step2.jpg" class="step-img" alt="选择模板界面图">
+                        </div>
+                    </div>
+
+                    <div class="note">步骤 3：预览生成的报纸画面，如满意则可直接点击“确认打印”；或者可进行重新拍摄。</div>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="step3.jpg" class="step-img" alt="选择模板界面图">
+                        </div>
+                    </div>
+
+                    <div class="note">步骤 4：选择需要打印的报纸份数。</div>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="step4.jpg" class="step-img" alt="选择模板界面图">
+                        </div>
+                    </div>
+
+                    <div class="note">步骤 5：等待报纸打印完成，即可翻开下方的出报口取出报纸。</div>
+
+                    <div class="step-box">
+                        <div class="img-row">
+                            <img src="step5.jpg" class="step-img" alt="选择模板界面图">
+                            <img src="step5出报.jpg" class="step-img" alt="选择模板界面图">
+                        </div>
+                    </div>
+
+                    <h2>拍报机操作视频</h2>
+                    <div class="step-box">
+                        <h3>演示视频</h3>
+                        <p>AI拍报机的完整使用流程。</p>
+                        <video class="step-video" controls poster="视频封面图.jpg">
+                            <source src="总体介绍.mp4" type="video/mp4">
+                            您的浏览器不支持 HTML5 视频播放，请更换浏览器查看。
+                        </video>
+                    </div>
+
+
+                `
+            },
+            'op_xiezhen': {
+                title: 'AI写真机操作指南',
+                breadcrumb: ['操作指南', 'AI写真机'],
+                content: `
+                    <h2>AI写真机操作流程</h2>
+                    <div class="note">步骤 1：选择心仪的写真风格模板（如：职场、古风）。</div>
+                    <div class="note">步骤 2：正对面部摄像头，保持表情自然，完成面部采集。</div>
+                    <div class="note">步骤 3：系统进行AI云端融合，约等待10-15秒。</div>
+                    <div class="note">步骤 4：预览融合后的写真大片，选择打印纸质版。</div>
+                `
+            },
+            'faq_baobao': {
+                title: 'AI拍报机 常见问题',
+                breadcrumb: ['常见问题', 'AI拍报机'],
+                content: `
+                    <div class="faq-section">
+                        <div class="faq-type-title">一、硬件问题</div>
+                        <p><strong>Q：屏幕触摸不灵敏且背面烫手？</strong><br>A：请检查显示屏散热器是否断电，必须保证屏幕散热器常开，同时检查线路连接是否有松动。</p>
+
+
+                        <div class="step-box">
+                            <div class="img-row">
+                                <img src="线路连接.jpg" class="step-img" alt="线路连接">
+                            </div>
+                        </div>
+
+                        <p><strong>Q：打印机卡纸或报纸变形？</strong><br>A：检查打印机纸张是否安装平整，清理取纸口异物。</p>
+                        
+                        <h2>打印机操作视频演示</h2>
+                    <div class="step-box">
+                        <h3>演示视频</h3>
+                        <p>请观看下方的操作演示视频，了解打印机完整使用流程。</p>
+                        <video class="step-video" controls poster="视频封面图.jpg">
+                            <source src="打印机故障排查.mp4" type="video/mp4">
+                            您的浏览器不支持 HTML5 视频播放，请更换浏览器查看。
+                        </video>
+                    </div>
+
+                        <div class="faq-type-title">二、软件问题</div>
+                        <p><strong>Q：人物抠图不干净，边缘有残留？</strong><br>A：检查背景布是否平整，利用机内“亮度调节旋钮”增强光亮后再尝试。</p>
+                        <p><strong>Q：点击“开始”后界面无响应？</strong><br>A：检查串口通信服务器指示灯是否正常，尝试重启软件程序。</p>
+                    </div>
+                `
+            },
+            'faq_xiezhen': {
+                title: 'AI写真机 常见问题',
+                breadcrumb: ['常见问题', 'AI写真机'],
+                content: `
+                    <div class="faq-section">
+                        <div class="faq-type-title">一、硬件问题</div>
+                        <p><strong>Q：照片打印出来色彩偏淡？</strong><br>A：检查写真打印机色带余量，并确认亮度调节旋钮未调至极端过亮状态。</p>
+
+                        <h2>相机色带安装演示</h2>
+                        <div class="step-box">
+                            <h3>演示视频</h3>
+                            <p>请观看下方的操作演示视频，了解相机色带安装的完整流程。</p>
+                            <video class="step-video" controls poster="视频封面图.jpg">
+                                <source src="相机色带安装.mp4" type="video/mp4">
+                            </video>
+                        </div>
+
+                        <p><strong>Q：音响无声音？</strong><br>A：检查共用组件区域的音频连线及串口服务器音频输出端口。</p>
+                        
+                        <div class="faq-type-title">二、软件问题</div>
+                        <p><strong>Q：AI融合后不像本人？</strong><br>A：拍摄时请勿佩戴眼镜或遮挡额头；确保面部光线均匀。</p>
+                        <p><strong>Q：模板列表加载缓慢？</strong><br>A：检查网络连接是否稳定，AI写真机对带宽要求较高。</p>
+                    </div>
+                `
+            }
+        };
+
+        // 导航逻辑
+        function loadPage(pageId) {
+            const data = pageContents[pageId] || pageContents['home'];
+            document.getElementById('page-title').textContent = data.title;
+            document.getElementById('breadcrumb').innerHTML = data.breadcrumb.map(i => `<li>${i}</li>`).join('');
+            document.getElementById('content-area').innerHTML = data.content;
+            
+            // 更新菜单状态
+            document.querySelectorAll('.menu-item, .submenu-item').forEach(el => el.classList.remove('active'));
+            const activeSub = document.querySelector(`[data-page="${pageId}"]`);
+            if (activeSub) activeSub.classList.add('active');
+            
+            window.scrollTo(0, 0);
+        }
+
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const sub = this.nextElementSibling;
+                if (sub && sub.classList.contains('submenu')) {
+                    sub.classList.toggle('active');
+                }
+                const pageId = this.getAttribute('data-page');
+                if (pageId) loadPage(pageId);
+            });
+        });
+
+        document.querySelectorAll('.submenu-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                loadPage(this.getAttribute('data-page'));
+            });
+        });
+
+        loadPage('home');
+    </script>
+</body>
+</html>
